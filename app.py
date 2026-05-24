@@ -1,9 +1,12 @@
+# ─── ADD THIS TO THE VERY TOP OF YOUR APP.PY ───
 from flask import Flask, jsonify, request, render_template_string
 import json, time, random
+import os  # <-- Add this import so we can read Render's system port
 
 app = Flask(__name__)
 
 GRID_SIZE = 1000
+# ... (Keep all your seed_canvas arrays and giant HTML strings exactly the same)
 pixel_grid = ["#FFFFFF"] * (GRID_SIZE * GRID_SIZE)
 
 # Seed canvas with vibrant artwork so it looks alive on load
@@ -526,7 +529,6 @@ input[type="color"]#colorPicker:hover { outline-color: #2563eb; }
 <body>
 <div class="app-shell">
 
-  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="brand">
       <div class="brand-icon">🎨</div>
@@ -559,10 +561,8 @@ input[type="color"]#colorPicker:hover { outline-color: #2563eb; }
     </div>
   </aside>
 
-  <!-- MAIN WORKSPACE -->
   <main class="workspace">
 
-    <!-- TOP BAR -->
     <header class="topbar">
       <div class="live-badge">
         <div class="live-dot"></div>
@@ -575,7 +575,6 @@ input[type="color"]#colorPicker:hover { outline-color: #2563eb; }
       </div>
     </header>
 
-    <!-- TICKER TAPE -->
     <div class="ticker">
       <div class="ticker-inner" id="tickerInner">
         <span class="tick">⚡ <span class="tick-user">OLE_BP</span> <span class="tick-sep">PAINTED</span> <span class="tick-coord">(500, 375)</span></span>
@@ -593,10 +592,8 @@ input[type="color"]#colorPicker:hover { outline-color: #2563eb; }
       </div>
     </div>
 
-    <!-- CANVAS VIEW -->
     <div class="view active" id="liveCanvasView">
 
-      <!-- TOOL PALETTE -->
       <div class="palette">
         <div class="mode-toggle">
           <button class="mbt on" id="modePaint">✏️ Paint</button>
@@ -629,7 +626,6 @@ input[type="color"]#colorPicker:hover { outline-color: #2563eb; }
         <div class="coord-display" id="coordHUD">X: —, Y: —</div>
       </div>
 
-      <!-- CANVAS FRAME -->
       <div class="canvas-frame" id="canvasFrame">
         <canvas id="pixelCanvas"></canvas>
         <div class="canvas-loader" id="canvasLoader">
@@ -639,7 +635,6 @@ input[type="color"]#colorPicker:hover { outline-color: #2563eb; }
         </div>
       </div>
 
-      <!-- ZOOM PANEL -->
       <div class="zoom-panel">
         <button class="zbtn" id="zoomIn" title="Zoom in">+</button>
         <div class="zoom-track">
@@ -649,17 +644,13 @@ input[type="color"]#colorPicker:hover { outline-color: #2563eb; }
         <div class="zoom-label" id="zoomLabel">1×</div>
       </div>
 
-      <!-- MINIMAP -->
       <div class="minimap" id="minimapEl">
         <div class="minimap-title">RADAR MAP</div>
         <canvas id="miniMapCanvas" width="150" height="150"></canvas>
         <div class="mm-fov" id="mmFov"></div>
       </div>
 
-    </div><!-- /liveCanvasView -->
-
-    <!-- LEADERBOARD VIEW -->
-    <div class="view" id="leaderboardView" style="flex-direction:column;">
+    </div><div class="view" id="leaderboardView" style="flex-direction:column;">
       <div style="padding:40px;overflow-y:auto;flex:1">
         <div class="page-header">
           <h2>🏆 Global Leaderboard</h2>
@@ -680,7 +671,6 @@ input[type="color"]#colorPicker:hover { outline-color: #2563eb; }
       </div>
     </div>
 
-    <!-- PROFILE VIEW -->
     <div class="view" id="profileView" style="align-items:center;justify-content:center;">
       <div class="profile-card">
         <div class="profile-icon">🎨</div>
@@ -693,7 +683,6 @@ input[type="color"]#colorPicker:hover { outline-color: #2563eb; }
   </main>
 </div>
 
-<!-- TOAST STACK -->
 <div class="toast-stack" id="toastStack"></div>
 
 <script>
@@ -1239,4 +1228,6 @@ renderLoop();
 </html>"""
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    # Grab the precise dynamic port assigned by Render, falling back to 5000 locally
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
